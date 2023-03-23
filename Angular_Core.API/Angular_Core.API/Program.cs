@@ -1,8 +1,20 @@
+using Angular_Core.API.DataModels;
+using Angular_Core.API.Repositories;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+var connectionString = builder.Configuration.GetConnectionString("AngularCoreDb");
+builder.Services.AddDbContext<AngularCoreContext>(options => options.UseSqlServer(connectionString));
+
+builder.Services.AddScoped<IStudentRepository, SQLStudentRepository>();
+
+builder.Services.AddAutoMapper(typeof(Program));
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
