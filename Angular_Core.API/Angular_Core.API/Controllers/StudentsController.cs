@@ -57,5 +57,25 @@ namespace Angular_Core.API.Controllers
             //return Ok(domainModelStudents);
 
         }
+
+        [HttpGet]
+        [Route("[controller]/{studentId:guid}")]
+        public async Task<IActionResult> GetStudentAsync([FromRoute] Guid studentId)
+        {
+            // Fetch student details
+            var student = await studentRepository.GetStudentAsync(studentId);
+
+            // Return
+            if (student == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(mapper.Map<Student>(student));
+        }
+
+
+
+
     }
 }
