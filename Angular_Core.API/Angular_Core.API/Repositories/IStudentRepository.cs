@@ -1,4 +1,5 @@
 ﻿using Angular_Core.API.DataModels;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace Angular_Core.API.Repositories
 {
@@ -6,5 +7,11 @@ namespace Angular_Core.API.Repositories
     {
         Task<List<Student>> GetStudentsAsync();
         Task<Student> GetStudentAsync(Guid studentId);
+
+        Task<List<Gender>> GetGendersAsync();
+
+        Task<bool> Exists(Guid studentId);
+
+        Task<Student> UpdateStudent(Guid studentId, Student student);
     }
 }
