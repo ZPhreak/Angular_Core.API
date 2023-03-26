@@ -13,5 +13,7 @@ namespace Angular_Core.API.Repositories
         Task<bool> Exists(Guid studentId);
 
         Task<Student> UpdateStudent(Guid studentId, Student student);
+
+        Task<Student> DeleteStudentAsync(Guid studentId);    
     }
 }

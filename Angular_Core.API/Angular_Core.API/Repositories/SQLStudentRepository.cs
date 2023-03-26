@@ -1,5 +1,6 @@
 ﻿using Angular_Core.API.DataModels;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.InteropServices;
 
 namespace Angular_Core.API.Repositories
 {
@@ -50,6 +51,20 @@ namespace Angular_Core.API.Repositories
                 await context.SaveChangesAsync();
                 return existingStudent;
 
+            }
+
+            return null;
+        }
+
+        public async Task<Student> DeleteStudentAsync(Guid studentId)
+        {
+            Student student = await context.Student.FirstOrDefaultAsync(x => x.Id == studentId); 
+            
+            if (student != null) { 
+                
+                context.Student.Remove(student);
+                await context.SaveChangesAsync();
+                return student;
             }
 
             return null;
