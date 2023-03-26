@@ -3,6 +3,7 @@ using Angular_Core.API.Repositories;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Angular_Core.API.Controllers
 {
@@ -11,11 +12,13 @@ namespace Angular_Core.API.Controllers
     {
         private readonly IStudentRepository studentRepository;
         private readonly IMapper mapper;
+        private readonly IImageRepository imageRepository;
 
-        public StudentsController(IStudentRepository studentRepository, IMapper mapper)
+        public StudentsController(IStudentRepository studentRepository, IMapper mapper, IImageRepository imageRepository)
         {
             this.studentRepository = studentRepository;
             this.mapper = mapper;
+            this.imageRepository = imageRepository;
         }
 
         [HttpGet]
@@ -116,6 +119,30 @@ namespace Angular_Core.API.Controllers
                 mapper.Map<Student>(student));
         }
 
+        [HttpPost]
+        [Route("[controller]/{studentId:guid}/upload-image")]
+        public async Task<IActionResult> UploadImage([FromRoute] Guid studentId, IFormFile profileImage)
+        {
+            // Check if student exists
+            if (await studentRepository.Exists(studentId))
+            {
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(profileImage.FileName);
+
+                // Upload the image to local storage
+                 var fileImagePath = await imageRepository.Upload(profileImage, fileName);
+
+                // Update the profile image path in the database
+                if (await studentRepository.UpdateProfileImage(studentId, fileImagePath))
+                {
+                    return Ok(fileImagePath);
+                }
+
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error uploading image.");
+            }
+
+            return NotFound();
+
+        }
 
     }
 }

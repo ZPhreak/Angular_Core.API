@@ -1,6 +1,8 @@
 using Angular_Core.API.DataModels;
 using Angular_Core.API.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
+using System.Diagnostics.Eventing.Reader;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +25,7 @@ var connectionString = builder.Configuration.GetConnectionString("AngularCoreDb"
 builder.Services.AddDbContext<AngularCoreContext>(options => options.UseSqlServer(connectionString));
 
 builder.Services.AddScoped<IStudentRepository, SQLStudentRepository>();
+builder.Services.AddScoped<IImageRepository, LocalStorageImageRepository>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -40,6 +43,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.ContentRootPath, "Resources")),
+    RequestPath = "/Resources"
+});
 
 app.UseCors("angularApplication");
 

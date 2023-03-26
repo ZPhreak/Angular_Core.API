@@ -17,5 +17,8 @@ namespace Angular_Core.API.Repositories
         Task<Student> DeleteStudentAsync(Guid studentId);
 
         Task<Student> AddStudent(Student student);
+
+        Task<bool> UpdateProfileImage(Guid studentId, string profileImageUrl);
+
     }
 }
