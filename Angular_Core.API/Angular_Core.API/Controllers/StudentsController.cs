@@ -123,22 +123,40 @@ namespace Angular_Core.API.Controllers
         [Route("[controller]/{studentId:guid}/upload-image")]
         public async Task<IActionResult> UploadImage([FromRoute] Guid studentId, IFormFile profileImage)
         {
-            // Check if student exists
-            if (await studentRepository.Exists(studentId))
+            var validExtensions = new List<string>()
             {
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(profileImage.FileName);
+                ".jpg",
+                ".jpeg",
+                ".png",
+                ".gif"
 
-                // Upload the image to local storage
-                 var fileImagePath = await imageRepository.Upload(profileImage, fileName);
+            };
 
-                // Update the profile image path in the database
-                if (await studentRepository.UpdateProfileImage(studentId, fileImagePath))
-                {
-                    return Ok(fileImagePath);
+            if (profileImage != null && profileImage.Length > 0)
+            {
+                var extension = Path.GetExtension(profileImage.FileName);
+                if (validExtensions.Contains(extension)) {
+                    if (await studentRepository.Exists(studentId))
+                    {
+                        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(profileImage.FileName);
+
+                        // Upload the image to local storage
+                        var fileImagePath = await imageRepository.Upload(profileImage, fileName);
+
+                        // Update the profile image path in the database
+                        if (await studentRepository.UpdateProfileImage(studentId, fileImagePath))
+                        {
+                            return Ok(fileImagePath);
+                        }
+
+                        return StatusCode(StatusCodes.Status500InternalServerError, "Error uploading image.");
+                    }
                 }
 
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error uploading image.");
+                return BadRequest("This is not a valid image format!");
             }
+            // Check if student exists
+
 
             return NotFound();
 

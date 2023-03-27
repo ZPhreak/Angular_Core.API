@@ -2,7 +2,10 @@ using Angular_Core.API.DataModels;
 using Angular_Core.API.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using FluentValidation.AspNetCore;
+
 using System.Diagnostics.Eventing.Reader;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +23,8 @@ builder.Services.AddCors((options) =>
 });
 
 builder.Services.AddControllers();
+
+builder.Services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Program>());
 
 var connectionString = builder.Configuration.GetConnectionString("AngularCoreDb");
 builder.Services.AddDbContext<AngularCoreContext>(options => options.UseSqlServer(connectionString));
